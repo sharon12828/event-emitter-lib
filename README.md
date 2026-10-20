@@ -26,3 +26,10 @@ Most projects that reach for an event emitter need `on`, `once`, `off`, and `emi
 The one behavioural choice worth knowing: listeners are **snapshotted at the start of `emit`**. A listener that adds another listener during dispatch will not see that new listener fire for the current emit — it fires on the next one. A listener that removes itself (or a later listener) during dispatch is still called if it was in the snapshot, but a later listener that was removed by an earlier one in the same dispatch is skipped. This is the single interpretation we picked; it keeps dispatch order predictable and mutation safe without copying on every call.
 
 The exported names are `EventEmitter`, with methods `on`, `once`, `off`, `emit`, `removeAllListeners`, and `listenerCount`.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
